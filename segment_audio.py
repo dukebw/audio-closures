@@ -32,7 +32,7 @@ def _to_seconds(seg):
 @click.option('--youtube-id', type=str, default=None)
 def segment_audio(youtube_id):
     if not os.path.exists(f'./data/{youtube_id}.mp4'):
-        out_fname = './data/{youtube_id}.mp4'
+        out_fname = f'./data/{youtube_id}.mp4'
         os.system(f'youtube-dl --format mp4 -o {out_fname} {youtube_id}')
         assert os.path.exists(out_fname)
 
@@ -47,6 +47,8 @@ def segment_audio(youtube_id):
         if not os.path.exists(back_fname):
             os.system(f'ffmpeg -ss {start} -to {end} -i '
                       f'./data/{youtube_id}.mp4 -codec copy {back_fname}')
+
+        os.system(f'ffmpeg -i {back_fname} -vn ./data/{back_id}_audio.mp4')
 
         requests.get(f'http://localhost:9090/requests/status.xml?command=in_play&input={back_fname}',
                      auth=HTTPBasicAuth('', 'a'))

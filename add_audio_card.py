@@ -41,9 +41,9 @@ def _anki_post(action, params=None):
 
 
 @click.command()
-@click.option('--audio-fname', type=str, default=None)
+@click.option('--youtube-id', type=str, default=None)
 @click.option('--func', type=click.Choice(['create', 'reset', 'sync']))
-def add_audio_card(audio_fname, func):
+def add_audio_card(youtube_id, func):
     resp = _anki_post('version')
     print(f'API version: {resp["result"]}')
 
@@ -55,43 +55,53 @@ def add_audio_card(audio_fname, func):
     assert 'audio_closures' in resp['result']
 
     if func == 'create':
-        front_paths = glob(f'./data/{audio_fname}_cloze*.mp4')
-        assert len(front_paths) >= 1
-        back_card = f'./data/{audio_fname}.mp4'
-        assert os.path.exists(back_card)
+        unique_audio_paths = glob(f'./data/{youtube_id}_*_audio.mp4')
+        unique_audio_paths = [p for p in unique_audio_paths if 'cloze' not in p]
+        assert len(unique_audio_paths) >= 1
 
-        media_existed = False
-        for fname in front_paths + [back_card]:
-            resp = _anki_post('retrieveMediaFile', {'filename': fname})
-            if resp['result']:
-                media_existed = True
-                continue
+        for uniq_aud_path in unique_audio_paths:
+            fname_start_end = os.path.basename(uniq_aud_path)
+            fname_start_end = os.path.splitext(fname_start_end)[0]
+            fname_start_end = fname_start_end.replace('_audio', '')
 
-            with open(f'./data/{fname}', 'rb') as fhan:
-                raw = fhan.read()
-            audio_base64 = base64.b64encode(raw).decode('utf-8')
-            _anki_post('storeMediaFile',
-                       {'filename': fname, 'data': audio_base64})
+            front_paths = glob(f'./data/{fname_start_end}_cloze*.mp4')
+            assert len(front_paths) >= 1
+            back_card = f'./data/{fname_start_end}_audio.mp4'
+            assert os.path.exists(back_card)
 
-        if media_existed:
-            click.confirm('Media existed. Continue adding?', abort=True)
+            media_existed = False
+            for path in front_paths + [back_card]:
+                fname = os.path.basename(path)
+                resp = _anki_post('retrieveMediaFile', {'filename': fname})
+                if resp['result']:
+                    media_existed = True
+                    continue
 
-        for front_path in front_paths:
-            front = os.path.basename(front_path)
-            front = os.path.splitext(front)[0]
-            params = {
-                'note': {
-                    'deckName': 'audio_closures',
-                    'modelName': '基本',
-                    'fields': {
-                        'Front': f'[sound:{front}.mp4]',
-                        'Back': f'[sound:{audio_fname}.mp4]'
-                    },
-                    'options': {'allowDuplicate': False},
-                    'tags': [],
+                with open(f'{path}', 'rb') as fhan:
+                    raw = fhan.read()
+                audio_base64 = base64.b64encode(raw).decode('utf-8')
+                _anki_post('storeMediaFile',
+                           {'filename': fname, 'data': audio_base64})
+
+            if media_existed:
+                click.confirm('Media existed. Continue adding?', abort=True)
+
+            for front_path in front_paths:
+                front = os.path.basename(front_path)
+                front = os.path.splitext(front)[0]
+                params = {
+                    'note': {
+                        'deckName': 'audio_closures',
+                        'modelName': '基本',
+                        'fields': {
+                            'Front': f'[sound:{front}.mp4]',
+                            'Back': f'[sound:{os.path.basename(back_card)}]'
+                        },
+                        'options': {'allowDuplicate': False},
+                        'tags': [],
+                    }
                 }
-            }
-            _anki_post('addNote', params)
+                _anki_post('addNote', params)
 
         return
 
