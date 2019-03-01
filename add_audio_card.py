@@ -84,7 +84,9 @@ def add_audio_card(youtube_id, func):
                            {'filename': fname, 'data': audio_base64})
 
             if media_existed:
-                click.confirm('Media existed. Continue adding?', abort=True)
+                click.confirm('Media existed. Skip and continue adding?',
+                              abort=True)
+                continue
 
             for front_path in front_paths:
                 front = os.path.basename(front_path)
