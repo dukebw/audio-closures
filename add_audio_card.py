@@ -65,7 +65,9 @@ def add_audio_card(youtube_id, func):
             fname_start_end = fname_start_end.replace('_audio', '')
 
             front_paths = glob(f'./data/{fname_start_end}_cloze*.mp4')
-            assert len(front_paths) >= 1
+            if len(front_paths) < 1:
+                print('No front paths!')
+                continue
             back_card = f'./data/{fname_start_end}_audio.mp4'
             assert os.path.exists(back_card)
 
