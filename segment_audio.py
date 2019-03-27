@@ -39,6 +39,9 @@ def segment_audio(youtube_id):
     with open(f'./config/{youtube_id}.json', 'r') as fhan:
         segs = json.load(fhan)
 
+    if not os.path.exists('./logs'):
+        os.mkdir('./logs')
+
     for seg in segs:
         start = _to_seconds(seg[0])
         end = _to_seconds(seg[1])
@@ -47,11 +50,11 @@ def segment_audio(youtube_id):
         if not os.path.exists(back_fname):
             os.system(f'ffmpeg -ss {start} -to {end} -i '
                       f'./data/{youtube_id}.mp4 -codec copy {back_fname}'
-                      f'>> logs/segment_audio 2>&1')
+                      f'>> ./logs/segment_audio 2>&1')
 
         audio_fpath = f'./data/{back_id}_audio.mp4'
         if not os.path.exists(audio_fpath):
-            os.system(f'ffmpeg -i {back_fname} -vn {audio_fpath} >> logs/segment_audio 2>&1')
+            os.system(f'ffmpeg -i {back_fname} -vn {audio_fpath} >> ./logs/segment_audio 2>&1')
 
         requests.get(f'http://localhost:9090/requests/status.xml?command=in_play&input={back_fname}',
                      auth=HTTPBasicAuth('', 'a'))
@@ -69,7 +72,7 @@ def segment_audio(youtube_id):
             assert 0 <= cloze_end <= seg_len
 
             vid_cloze_path = f'./data/{back_id}_cloze{cloze_count}.mp4'
-            os.system(f'ffmpeg -i {back_fname} -af "volume=enable=\'between(t,{cloze_start},{cloze_end})\':volume=0" {vid_cloze_path} >> logs/segment_audio 2>&1')
+            os.system(f'ffmpeg -i {back_fname} -af "volume=enable=\'between(t,{cloze_start},{cloze_end})\':volume=0" {vid_cloze_path} >> ./logs/segment_audio 2>&1')
 
             requests.get(f'http://localhost:9090/requests/status.xml?command=in_play&input={vid_cloze_path}',
                          auth=HTTPBasicAuth('', 'a'))
@@ -77,7 +80,7 @@ def segment_audio(youtube_id):
             if click.confirm('Keep cloze?'):
                 cloze_count += 1
                 audio_cloze_path = f'{os.path.splitext(vid_cloze_path)[0]}_audio.mp4'
-                os.system(f'ffmpeg -i {vid_cloze_path} -vn {audio_cloze_path} >> logs/segment_audio 2>&1')
+                os.system(f'ffmpeg -i {vid_cloze_path} -vn {audio_cloze_path} >> ./logs/segment_audio 2>&1')
 
             os.remove(vid_cloze_path)
 
