@@ -2,5 +2,25 @@
         {
                 "前": "給出並證明赫爾德不等式",
                 "後": "https://zh.wikipedia.org/wiki/%E8%B5%AB%E5%B0%94%E5%BE%B7%E4%B8%8D%E7%AD%89%E5%BC%8F"
+        },
+        {
+                "前": "給出一個向量空間的半範數的定義",
+                "後": "https://zh.wikipedia.org/wiki/%E8%8C%83%E6%95%B0#%E5%AE%9A%E7%BE%A9"
+        },
+        {
+                "前": "矩陣p-範數的定義",
+                "後": "https://zh.wikipedia.org/wiki/%E7%9F%A9%E9%99%A3%E7%AF%84%E6%95%B8#p-%E8%8C%83%E6%95%B0%E8%AF%B1%E5%AF%BC%E7%9A%84%E7%9F%A9%E9%98%B5%E8%8C%83%E6%95%B0"
+        },
+        {
+                "前": "證明 [$$]{\\lVert AB \\rVert}_p \leq {\\lVert A \\rVert}_p {\\lVert B \\rVert}_p[/$$]",
+                "後": "?"
+        },
+        {
+                "前": "If [$$]A \\in \\mathbb{R}^{m \times n}[/$$], then there exists a unit 2-norm [$$]n[/$$]-vector [$$]z[/$$] s.t. [$$]A^\\intercal A z = \\mu^2 z[/$$] where [$$]\mu = {\lVert A \rVert}_2[/$$]",
+                "後": "Golub Matrix Computations 2.3.3"
+        },
+        {
+                "前": "If [$$]A \\in \\mathbb{R}^{m \times n}[/$$], then [$$]{\\lVert A \\rVert}_2 \\leq \\sqrt{{\\lVert A \\rVert}_1 {\\lVert A \\rVert}_\\infty}[/$$]",
+                "後": "Golub Matrix Computations 2.3.3"
         }
 ]
