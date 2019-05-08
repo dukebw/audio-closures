@@ -34,6 +34,7 @@ def segment_audio(youtube_id):
     if not os.path.exists(f'./data/{youtube_id}.mp4'):
         out_fname = f'./data/{youtube_id}.mp4'
         os.system(f'youtube-dl --format mp4 -o {out_fname} {youtube_id}')
+        os.system(f'ffmpeg-normalize -f {out_fname} -o {out_fname} -c:a aac -b:a 192k')
         assert os.path.exists(out_fname)
 
     with open(f'./config/{youtube_id}.json', 'r') as fhan:
